@@ -28,13 +28,14 @@ The models can be found in `onnx/` folder.
 Although we've tested the model on German/Belgium/Chinese datasets, for verification purpose we suggest starting with German (GTSRB) datatset for testing. You have two ways to get it:
   - Download the entire dataset from [kaggle](https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?datasetId=82373&language=Python).
   - Download just the *test* set from [drive](https://drive.google.com/drive/folders/1vKvawIPsUdAddezZudXJ6HRJ1TtmbOw0?usp=sharing). You should unzip the `Test.zip` file from `GTSRB_dataset` folder.
+
 In te end you should have the folder `GTSRB_dataset` at the same level with `onnx` and `vnnlib` folder.
 
-## Script's arguments
+## Script arguments
 The script `src/generate_properties.py` can be executed without any arguments.
 In this case it will use default values:
   - **seed**: 42
-  - **epsilon**: [1, 3, 5, 10, 15]. It will generate vnnlib files for each epsilon from the list. In case you want to pass an argument for epsilon it should be an integer not a list.
+  - **epsilon**: [1, 3, 5, 10, 15]. It will generate vnnlib files for each epsilon from the list. In case you want to pass a specific value for epsilon it should be an integer not a list.
   - **network**: all three networks from `onnx/` folder.
   - **n**: 10 (number of samples to generate)
   - **negate_spec**: False
