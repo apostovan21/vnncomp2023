@@ -12,7 +12,7 @@ Although we've tested the model on German/Belgium/Chinese datasets, for verifica
 In the end you should have the folder `GTSRB_dataset` at the same level with `onnx` and `vnnlib` folder.
 
 ## ONNX Models
-We chose our 3 best models, one for each image size we have trained: 30x30, 48x48, 64x64 (px x px). The models can be found in `onnx/` folder.
+We chose our 3 best models in terms of accuracy, one for each image size we have trained: 30x30, 48x48, 64x64 (px x px). The models can be found in `onnx/` folder.
 
 ## VNNLIB Files
 We have generated the `vnnlib` files for all three models, with the `epsilon = 1, 3, 5, 10, 15`, but using different `seed` value for each model, as following:
@@ -38,4 +38,5 @@ In this case it will use default values:
 ```
 ## References
 [1] https://docs.larq.dev/larq/
+
 [2] Andreea Postovan and Mădălina Eraşcu. Architecturing Binarized Neural Networks for Traffic Sign Recognition. https://arxiv.org/abs/2303.15005
