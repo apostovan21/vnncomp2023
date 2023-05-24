@@ -20,7 +20,7 @@ We have generated the `vnnlib` files for all three models, with the `epsilon = 1
   - Model `3_48_48_*` seed = 0
   - Model `3_64_64_*` seed = 1
 
-## How to run the dataset generation
+## How to generate VNNLIB specifications 
 
 ### Script arguments
 The script `src/generate_properties.py` can be executed without any arguments.
