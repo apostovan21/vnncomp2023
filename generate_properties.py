@@ -91,7 +91,7 @@ def get_sample_idx(n, seed=42, n_max=10000):
     return idx
 
 
-def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, negate_spec, dont_extend, instances, new_instances):
+def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, negate_spec, dont_extend, network, instances, new_instances, time_out):
     mean = np.array(0.0).reshape((1, -1, 1, 1)).astype(np.float32)
     std = np.array(1.0).reshape((1, -1, 1, 1)).astype(np.float32)
 
@@ -118,9 +118,13 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
                     for eps in DEFAULT_EPSILON:
                         spec_i = write_vnn_spec(x_test, y_test, idx, eps, dir_path=spec_path, prefix="model_"+str(img_size),
                                                 data_lb=0, data_ub=255, n_class=43, mean=mean, std=std, negate_spec=negate_spec)
+                        f.write(
+                            f"{''if network is None else os.path.join('onnx/',os.path.basename(network))},{os.path.join('vnnlib/',spec_i)},{time_out:.1f}\n")
                 else:
                     spec_i = write_vnn_spec(x_test, y_test, idx, epsilon, dir_path=spec_path, prefix="model"+str(img_size),
                                             data_lb=0, data_ub=255, n_class=43, mean=mean, std=std, negate_spec=negate_spec)
+                    f.write(
+                        f"{''if network is None else os.path.join('onnx/',os.path.basename(network))},{os.path.join('vnnlib/',spec_i)},{time_out:.1f}\n")
             elif not dont_extend:
                 # only sample idxs while there are still new samples to be found
                 if len(idxs) < len(x_test):
@@ -145,7 +149,7 @@ def get_img_size(network):
         return None
 
 
-def process_network(network, n, seed, epsilon, negate_spec, dont_extend, instances, new_instances):
+def process_network(network, n, seed, epsilon, negate_spec, dont_extend, instances, new_instances, time_out):
     instances_dir = os.path.dirname(instances)
     if not os.path.isdir(instances_dir):
         os.mkdir(instances_dir)
@@ -160,7 +164,7 @@ def process_network(network, n, seed, epsilon, negate_spec, dont_extend, instanc
     x_test, y_test = get_testing_dataset((img_size, img_size))
 
     get_all_spec(n, seed, x_test, y_test, sess,
-                 input_name, img_size, epsilon, negate_spec, dont_extend, instances, new_instances)
+                 input_name, img_size, epsilon, negate_spec, dont_extend, network, instances, new_instances, time_out)
 
 
 def main():
@@ -182,16 +186,18 @@ def main():
                         default="./instances.csv", help="Path to instances file")
     parser.add_argument("--new_instances", action="store_true",
                         default=False, help="Overwrite old instances.csv")
+    parser.add_argument('--time_out', type=float, default=300.0,
+                        help='time out')
 
     args = parser.parse_args()
 
     if args.network is not None:
         process_network(args.network, args.n, args.seed,
-                        args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances)
+                        args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances, args.time_out)
     else:
         for network in DEFAULT_NETWORK:
             process_network(network, args.n, args.seed,
-                            args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances)
+                            args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances, args.time_out)
 
 
 if __name__ == "__main__":
