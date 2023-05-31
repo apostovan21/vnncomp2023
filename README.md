@@ -5,11 +5,7 @@ This benchmark set includes 3 binarized neural networks (BNNs), provided in the 
 The verification properties, provided in the `vnnlib/` folder, represent adversarial robustness to infinity norm perturbations around 0 whose radius of `epsilon` was randomly chosen, see below.
 
 ## Dataset details
-Although we've tested the model on German/Belgium/Chinese datasets, for verification purpose we suggest starting with German (GTSRB) datatset for testing. You have two ways to get it:
-  - Download the entire dataset from [kaggle](https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?datasetId=82373&language=Python).
-  - Download just the *test* set from [drive](https://drive.google.com/drive/folders/1vKvawIPsUdAddezZudXJ6HRJ1TtmbOw0?usp=sharing). You should unzip the `Test.zip` file from `GTSRB_dataset` folder.
-
-In the end you should have the folder `GTSRB_dataset` at the same level with `onnx` and `vnnlib` folder.
+Although we've tested the model on German/Belgium/Chinese datasets, for verification purpose we suggest starting with German (GTSRB) datatset for testing. As this dataset isn't included in any python package, we have added the test set into `GTSRB_dataset` folder of this repository. 
 
 ## ONNX Models
 We chose our 3 best models in terms of accuracy, one for each image size we have trained: 30x30, 48x48, 64x64 (px x px). The models can be found in `onnx/` folder.
@@ -36,6 +32,19 @@ In this case it will use default values:
 ```
 ./generate_properties.py --network onnx/3_64_64_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_MP_2_BN_Dense_1024_BN_Dense_43_ep_30.onnx --seed 1
 ```
+
+## Citation
+If you find the repo useful, fell free to cite us:
+
+```
+@article{postovan2023architecturing,
+  title={Architecturing Binarized Neural Networks for Traffic Sign Recognition},
+  author={Postovan, Andreea and Era{\c{s}}cu, M{\u{a}}d{\u{a}}lina},
+  journal={arXiv preprint arXiv:2303.15005},
+  year={2023}
+}
+```
+
 ## References
 [1] https://docs.larq.dev/larq/
 
