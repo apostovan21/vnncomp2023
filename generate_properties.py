@@ -91,7 +91,7 @@ def get_sample_idx(n, seed=42, n_max=10000):
     return idx
 
 
-def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, negate_spec, dont_extend):
+def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, negate_spec, dont_extend, instances, new_instances):
     mean = np.array(0.0).reshape((1, -1, 1, 1)).astype(np.float32)
     std = np.array(1.0).reshape((1, -1, 1, 1)).astype(np.float32)
 
@@ -102,36 +102,37 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
     i = 0
     ii = 1
     n_ok = 0
-    while i < len(idxs):
-        idx = idxs[i]
-        i += 1
-        x = x_test[idx]
-        y = y_test[idx]
-        x_new = x[np.newaxis, ...]
-        pred_onx = sess.run(None, {input_name: x_new})[0]
-        y_pred = np.argmax(pred_onx, axis=-1)
-        n_ok += sum(y == y_pred)
+    with open(instances, "w" if new_instances else "a") as f:
+        while i < len(idxs):
+            idx = idxs[i]
+            i += 1
+            x = x_test[idx]
+            y = y_test[idx]
+            x_new = x[np.newaxis, ...]
+            pred_onx = sess.run(None, {input_name: x_new})[0]
+            y_pred = np.argmax(pred_onx, axis=-1)
+            n_ok += sum(y == y_pred)
 
-        if y == y_pred:
-            if epsilon == None:
-                for eps in DEFAULT_EPSILON:
-                    spec_i = write_vnn_spec(x_test, y_test, idx, eps, dir_path=spec_path, prefix="model_"+str(img_size),
+            if y == y_pred:
+                if epsilon == None:
+                    for eps in DEFAULT_EPSILON:
+                        spec_i = write_vnn_spec(x_test, y_test, idx, eps, dir_path=spec_path, prefix="model_"+str(img_size),
+                                                data_lb=0, data_ub=255, n_class=43, mean=mean, std=std, negate_spec=negate_spec)
+                else:
+                    spec_i = write_vnn_spec(x_test, y_test, idx, epsilon, dir_path=spec_path, prefix="model"+str(img_size),
                                             data_lb=0, data_ub=255, n_class=43, mean=mean, std=std, negate_spec=negate_spec)
-            else:
-                spec_i = write_vnn_spec(x_test, y_test, idx, epsilon, dir_path=spec_path, prefix="model"+str(img_size),
-                                        data_lb=0, data_ub=255, n_class=43, mean=mean, std=std, negate_spec=negate_spec)
-        elif not dont_extend:
-            # only sample idxs while there are still new samples to be found
-            if len(idxs) < len(x_test):
-                tmp_idx = get_sample_idx(
-                    1, seed=seed+ii, n_max=len(x_test))
-                ii += 1
-                while tmp_idx in idxs:
+            elif not dont_extend:
+                # only sample idxs while there are still new samples to be found
+                if len(idxs) < len(x_test):
                     tmp_idx = get_sample_idx(
-                        1, seed=seed + ii, n_max=len(x_test))
+                        1, seed=seed+ii, n_max=len(x_test))
                     ii += 1
-                idxs.append(*tmp_idx)
-    print(f"{len(idxs)-n_ok} samples were misclassified{''if dont_extend else ' and replacement samples drawn'}.")
+                    while tmp_idx in idxs:
+                        tmp_idx = get_sample_idx(
+                            1, seed=seed + ii, n_max=len(x_test))
+                        ii += 1
+                    idxs.append(*tmp_idx)
+        print(f"{len(idxs)-n_ok} samples were misclassified{''if dont_extend else ' and replacement samples drawn'}.")
 
 
 def get_img_size(network):
@@ -144,7 +145,11 @@ def get_img_size(network):
         return None
 
 
-def process_network(network, n, seed, epsilon, negate_spec, dont_extend):
+def process_network(network, n, seed, epsilon, negate_spec, dont_extend, instances, new_instances):
+    instances_dir = os.path.dirname(instances)
+    if not os.path.isdir(instances_dir):
+        os.mkdir(instances_dir)
+
     sess = rt.InferenceSession(network)
     input_name = sess.get_inputs()[0].name
 
@@ -155,7 +160,7 @@ def process_network(network, n, seed, epsilon, negate_spec, dont_extend):
     x_test, y_test = get_testing_dataset((img_size, img_size))
 
     get_all_spec(n, seed, x_test, y_test, sess,
-                 input_name, img_size, epsilon, negate_spec, dont_extend)
+                 input_name, img_size, epsilon, negate_spec, dont_extend, instances, new_instances)
 
 
 def main():
@@ -173,16 +178,20 @@ def main():
                         help='Generate spec that is violated for correct certification')
     parser.add_argument('--dont_extend', action="store_true", default=False,
                         help='Do not filter for naturally correctly classified images')
+    parser.add_argument("--instances", type=str,
+                        default="./instances.csv", help="Path to instances file")
+    parser.add_argument("--new_instances", action="store_true",
+                        default=False, help="Overwrite old instances.csv")
 
     args = parser.parse_args()
 
     if args.network is not None:
         process_network(args.network, args.n, args.seed,
-                        args.epsilon, args.negate_spec, args.dont_extend)
+                        args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances)
     else:
         for network in DEFAULT_NETWORK:
             process_network(network, args.n, args.seed,
-                            args.epsilon, args.negate_spec, args.dont_extend)
+                            args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances)
 
 
 if __name__ == "__main__":
