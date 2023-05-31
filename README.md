@@ -19,7 +19,7 @@ We have generated the `vnnlib` files for all three models, with the `epsilon = 1
 ## How to generate VNNLIB specifications 
 
 ### Script arguments
-The script `src/generate_properties.py` can be executed without any arguments.
+The script `generate_properties.py` can be executed without any arguments.
 In this case it will use default values:
   - **seed**: 42
   - **epsilon**: [1, 3, 5, 10, 15]. It will generate vnnlib files for each epsilon from the list. In case you want to pass a specific value for epsilon it should be an integer not a list.
@@ -27,6 +27,9 @@ In this case it will use default values:
   - **n**: 10 (number of samples to generate)
   - **negate_spec**: False
   - **dont_extend**: False
+  - **instances**: `./instances.csv`
+  - **new_instances**: False
+  - **time_out**: 300
 
 ### Example of calling the script:
 ```
