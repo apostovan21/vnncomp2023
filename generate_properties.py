@@ -6,6 +6,7 @@ import onnxruntime as rt
 import re
 from PIL import Image
 import pandas as pd
+import csv
 
 DEFAULT_EPSILON = [1, 3, 5, 10, 15]
 DEFAULT_NETWORK = ['onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx',
@@ -13,10 +14,28 @@ DEFAULT_NETWORK = ['onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx',
                    'onnx/3_64_64_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_MP_2_BN_Dense_1024_BN_Dense_43_ep_30.onnx']
 
 
+def read_csv(file_path):
+    first_column = []
+    second_column = []
+
+    with open(file_path, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # Skip the first row
+
+        for row in csv_reader:
+            if len(row) >= 2:
+                first_column.append(row[6])
+                second_column.append(row[7])
+
+    return np.array(first_column).astype(int), np.array(second_column)
+
+
 def get_testing_dataset(img_size):
-    ds = pd.read_csv('GTSRB_dataset/Test.csv')
-    y_test = ds["ClassId"].values
-    imgs = ds["Path"].values
+    # ds = pd.read_csv('GTSRB_dataset/Test.csv')
+    # y_test = ds["ClassId"].values
+    # imgs = ds["Path"].values
+
+    y_test, imgs = read_csv('GTSRB_dataset/Test.csv')
 
     data = []
     for img in imgs:
@@ -102,7 +121,9 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
     i = 0
     ii = 1
     n_ok = 0
+    x = 10
     with open(instances, "w" if new_instances else "a") as f:
+        print(idxs)
         while i < len(idxs):
             idx = idxs[i]
             i += 1
@@ -111,7 +132,7 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
             x_new = x[np.newaxis, ...]
             pred_onx = sess.run(None, {input_name: x_new})[0]
             y_pred = np.argmax(pred_onx, axis=-1)
-            n_ok += sum(y == y_pred)
+            n_ok += (y == y_pred)
 
             if y == y_pred:
                 if epsilon == None:
