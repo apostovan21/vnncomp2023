@@ -5,7 +5,7 @@ import os
 import onnxruntime as rt
 import re
 from PIL import Image
-import pandas as pd
+#import pandas as pd
 import csv
 
 DEFAULT_EPSILON = [1, 3, 5, 10, 15]
