@@ -31,10 +31,6 @@ def read_csv(file_path):
 
 
 def get_testing_dataset(img_size):
-    # ds = pd.read_csv('GTSRB_dataset/Test.csv')
-    # y_test = ds["ClassId"].values
-    # imgs = ds["Path"].values
-
     y_test, imgs = read_csv('GTSRB_dataset/Test.csv')
 
     data = []
@@ -123,7 +119,6 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
     n_ok = 0
     x = 10
     with open(instances, "w" if new_instances else "a") as f:
-        print(idxs)
         while i < len(idxs):
             idx = idxs[i]
             i += 1
@@ -193,7 +188,7 @@ def main():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--epsilon', type=float, default=None,
                         help='The epsilon for L_infinity perturbation')
-    parser.add_argument('--n', type=int, default=10,
+    parser.add_argument('--n', type=int, default=4,
                         help='The number of specs to generate')
     parser.add_argument('seed', type=int, default=42,
                         help='Random seed for idx generation')

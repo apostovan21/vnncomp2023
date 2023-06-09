@@ -33,7 +33,7 @@ In this case it will use default values:
 
 ### Example of calling the script:
 ```
-./generate_properties.py --network onnx/3_64_64_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_MP_2_BN_Dense_1024_BN_Dense_43_ep_30.onnx --seed 1
+./generate_properties.py --network onnx/3_64_64_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_MP_2_BN_Dense_1024_BN_Dense_43_ep_30.onnx 1
 ```
 
 ## Citation
