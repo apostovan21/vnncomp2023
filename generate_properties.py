@@ -188,7 +188,7 @@ def main():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--epsilon', type=float, default=None,
                         help='The epsilon for L_infinity perturbation')
-    parser.add_argument('--n', type=int, default=4,
+    parser.add_argument('--n', type=int, default=3,
                         help='The number of specs to generate')
     parser.add_argument('seed', type=int, default=42,
                         help='Random seed for idx generation')
@@ -201,8 +201,8 @@ def main():
     parser.add_argument("--instances", type=str,
                         default="./instances.csv", help="Path to instances file")
     parser.add_argument("--new_instances", action="store_true",
-                        default=False, help="Overwrite old instances.csv")
-    parser.add_argument('--time_out', type=float, default=300.0,
+                        default=True, help="Overwrite old instances.csv")
+    parser.add_argument('--time_out', type=float, default=480.0,
                         help='time out')
 
     args = parser.parse_args()
@@ -211,9 +211,11 @@ def main():
         process_network(args.network, args.n, args.seed,
                         args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances, args.time_out)
     else:
+        first_time = True
         for network in DEFAULT_NETWORK:
             process_network(network, args.n, args.seed,
-                            args.epsilon, args.negate_spec, args.dont_extend, args.instances, args.new_instances, args.time_out)
+                            args.epsilon, args.negate_spec, args.dont_extend, args.instances, (args.new_instances and first_time), args.time_out)
+            first_time = False
 
 
 if __name__ == "__main__":
