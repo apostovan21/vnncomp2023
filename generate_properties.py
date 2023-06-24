@@ -112,7 +112,7 @@ def get_all_spec(n, seed, x_test, y_test, sess, input_name, img_size, epsilon, n
 
     idxs = get_sample_idx(n, seed, n_max=len(x_test))
     spec_path = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), "../vnnlib")
+        os.path.abspath(__file__)), "./vnnlib")
 
     i = 0
     ii = 1
