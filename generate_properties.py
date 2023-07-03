@@ -2,10 +2,10 @@ import argparse
 import numpy as np
 from torchvision import transforms, datasets
 import os
+import shutil
 import onnxruntime as rt
 import re
 from PIL import Image
-#import pandas as pd
 import csv
 
 DEFAULT_EPSILON = [1, 3, 5, 10, 15]
@@ -169,6 +169,9 @@ def process_network(network, n, seed, epsilon, negate_spec, dont_extend, instanc
     instances_dir = os.path.dirname(instances)
     if not os.path.isdir(instances_dir):
         os.mkdir(instances_dir)
+        
+    if new_instances:
+        shutil.rmtree('./vnnlib')
 
     sess = rt.InferenceSession(network)
     input_name = sess.get_inputs()[0].name

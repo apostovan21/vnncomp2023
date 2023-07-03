@@ -11,17 +11,13 @@ Although we've tested the model on German/Belgium/Chinese datasets, for verifica
 We chose our 3 best models in terms of accuracy, one for each image size we have trained: 30x30, 48x48, 64x64 (px x px). The models can be found in `onnx/` folder.
 
 ## VNNLIB Files
-We have generated the `vnnlib` files for all three models, with the `epsilon = 1, 3, 5, 10, 15`, but using different `seed` value for each model, as following:
-  - Model `3_30_30_*` seed = 42 (default)
-  - Model `3_48_48_*` seed = 0
-  - Model `3_64_64_*` seed = 1
+We have generated the `vnnlib` files for all three models, with the `epsilon = 1, 3, 5, 10, 15`, and using different `seed = 0`
 
 ## How to generate VNNLIB specifications 
 
 ### Script arguments
-The script `generate_properties.py` can be executed without any arguments.
+The script `generate_properties.py` can be executed by passing only **seed** argument.
 In this case it will use default values:
-  - **seed**: 42
   - **epsilon**: [1, 3, 5, 10, 15]. It will generate vnnlib files for each epsilon from the list. In case you want to pass a specific value for epsilon it should be an integer not a list.
   - **network**: all three networks from `onnx/` folder.
   - **n**: 3 (number of samples to generate)
@@ -33,7 +29,7 @@ In this case it will use default values:
 
 ### Example of calling the script:
 ```
-./generate_properties.py --network onnx/3_64_64_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_MP_2_BN_Dense_1024_BN_Dense_43_ep_30.onnx 1
+./generate_properties.py 42
 ```
 
 ## Citation
